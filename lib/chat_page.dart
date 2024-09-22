@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Add this import
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'pages/widgets/chat_bubble.dart';
+import 'constants/colors.dart';
 
-import 'widgets/chat_bubble.dart';
-
-const apiKey = 'AIzaSyA1ZVsQ3hMTeRNOvkPwbt3CBolR8o35m8A';
+const apiKey = 'AIzaSyACec0La78HL4CVV-IK4d0Cq8FS6W0CvMs';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -24,25 +25,37 @@ class _ChatPageState extends State<ChatPage> {
     const ChatBubble(
       direction: Direction.left,
       message: 'Halo, saya ERLANGS AI. Ada yang bisa saya bantu?',
-      photoUrl: 'https://i.pravatar.cc/150?img=47',
+      photoUrl: 'https://i.pravatar.cc/150?img=2',
       type: BubbleType.alone,
     ),
   ];
+
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut(); // Logout user
+    Navigator.of(context)
+        .pushReplacementNamed('/login'); // Navigate to login page
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: CupertinoButton(
-          child: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.pop(context),
+        leading: Icon(
+          Icons.model_training,
+          color: AppColors.white,
         ),
-        title: const Text('Erlangs Personal Assistant AI',
-            style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 3, 47, 123),
+        title: const Text('Erlangs AI', style: TextStyle(color: Colors.white)),
+        backgroundColor: AppColors.primary,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
+            onPressed: _logout, // Call logout function
+            tooltip: 'Logout',
+          ),
+        ],
       ),
       body: Column(
         children: [
