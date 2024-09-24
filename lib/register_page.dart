@@ -136,8 +136,8 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, // Background color
-                  backgroundColor: AppColors.primary, // Text color
+                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primary,
                 ),
                 onPressed: _isLoading ? null : _register,
                 child: _isLoading
@@ -174,6 +174,16 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
+    if (!_emailController.text.contains('@')) {
+      _showErrorDialog('Please enter a valid email address.');
+      return;
+    }
+
+    if (_passwordController.text.length < 6) {
+      _showErrorDialog('Password must be at least 6 characters long.');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -190,8 +200,11 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': _emailController.text,
       });
 
-      // Menampilkan dialog sukses setelah registrasi berhasil
-      _showSuccessDialog('Registration Successful! You can now log in.');
+      await userCredential.user!.sendEmailVerification(); // Verifikasi email
+
+      _showSuccessDialog(
+        'Registration successful! A verification email has been sent. Please verify your email before logging in.',
+      );
     } catch (e) {
       _showErrorDialog('Registration Failed: ${e.toString()}');
     } finally {
@@ -243,5 +256,13 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    super.dispose();
   }
 }

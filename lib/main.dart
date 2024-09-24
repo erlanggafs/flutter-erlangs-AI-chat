@@ -1,11 +1,12 @@
 import 'package:erlangs_ai/chat_page.dart';
 import 'package:erlangs_ai/firebase_options.dart';
 import 'package:erlangs_ai/login_page.dart';
-import 'package:erlangs_ai/spkashscreen.dart';
+import 'package:erlangs_ai/splashscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // Tambahkan ini untuk Google Sign-In
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,4 +56,25 @@ class MyApp extends StatelessWidget {
       },
     );
   }
+}
+
+// Fungsi Google Sign-In
+Future<User?> signInWithGoogle() async {
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  if (googleUser != null) {
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+    return userCredential.user;
+  }
+
+  return null;
 }

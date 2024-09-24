@@ -1,6 +1,7 @@
 import 'package:erlangs_ai/chat_page.dart';
 import 'package:erlangs_ai/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // Import Google Sign-In
 import 'package:flutter/material.dart';
 import 'constants/colors.dart';
 
@@ -15,7 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _isPasswordVisible = false; // Kontrol visibilitas password
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,14 +55,14 @@ class _LoginPageState extends State<LoginPage> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25.0),
                     borderSide: const BorderSide(
-                      color: AppColors.primary, // Warna border saat fokus
+                      color: AppColors.primary,
                       width: 2.0,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25.0),
                     borderSide: const BorderSide(
-                      color: AppColors.black, // Warna border saat enabled
+                      color: AppColors.black,
                       width: 2.0,
                     ),
                   ),
@@ -74,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: TextFormField(
                 controller: _passwordController,
-                obscureText: !_isPasswordVisible, // Atur visibilitas password
+                obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   prefixIcon: Icon(
                     Icons.vpn_key,
@@ -96,14 +97,14 @@ class _LoginPageState extends State<LoginPage> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25.0),
                     borderSide: const BorderSide(
-                      color: AppColors.primary, // Warna border saat fokus
+                      color: AppColors.primary,
                       width: 2.0,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25.0),
                     borderSide: const BorderSide(
-                      color: AppColors.black, // Warna border saat enabled
+                      color: AppColors.black,
                       width: 2.0,
                     ),
                   ),
@@ -115,13 +116,31 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, // Background color
-                  backgroundColor: AppColors.primary, // Text color
+                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primary,
                 ),
                 onPressed: _isLoading ? null : _login,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Login'),
+              ),
+            ),
+            Center(child: Text('OR')),
+            // Tambahkan tombol Google Sign-In
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: ElevatedButton.icon(
+                icon: Image.asset(
+                  'assets/icons/google_logo.png', // Path ke logo Google
+                  height: 24.0,
+                  width: 24.0,
+                ),
+                label: const Text('Sign in with Google'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primary,
+                ),
+                onPressed: _isLoading ? null : _signInWithGoogle,
               ),
             ),
             Row(
@@ -145,6 +164,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // Fungsi login dengan email dan password
   void _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       _showErrorDialog('Please fill in all fields.');
@@ -156,14 +176,12 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      // Melakukan login dengan Firebase Auth
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // Pindah ke halaman chat jika login berhasil
       if (userCredential.user != null) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const ChatPage()));
@@ -177,6 +195,41 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Fungsi login dengan Google
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        if (userCredential.user != null) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const ChatPage()));
+        }
+      }
+    } catch (e) {
+      _showErrorDialog('Google Sign-In Failed: ${e.toString()}');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Fungsi menampilkan dialog error
   void _showErrorDialog(String message) {
     showDialog(
       context: context,

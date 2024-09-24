@@ -12,7 +12,12 @@
           "package_name": "com.example.flutter_chat_google_ai"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "14928407645-615j8a96b1ouqr7p5fjgnlfblv80j9fr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBuZWqQf1Ygau48kX5Iqi6V6M91ZQMOL5E"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "14928407645-615j8a96b1ouqr7p5fjgnlfblv80j9fr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "14928407645-iirgemrrmj1vsaru4nm07p56grbha991.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterChatGoogleAi"
+              }
+            }
+          ]
         }
       }
     }
