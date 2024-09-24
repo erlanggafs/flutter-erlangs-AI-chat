@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Add this import
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'pages/widgets/chat_bubble.dart';
 import 'constants/colors.dart';
@@ -16,9 +16,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
-
   TextEditingController messageController = TextEditingController();
-
   bool isLoading = false;
 
   List<ChatBubble> chatBubbles = [
@@ -31,9 +29,20 @@ class _ChatPageState extends State<ChatPage> {
   ];
 
   Future<void> _logout() async {
-    await FirebaseAuth.instance.signOut(); // Logout user
-    Navigator.of(context)
-        .pushReplacementNamed('/login'); // Navigate to login page
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacementNamed('/login');
+  }
+
+  void _refreshChat() {
+    setState(() {
+      chatBubbles.clear();
+      chatBubbles.add(const ChatBubble(
+        direction: Direction.left,
+        message: 'Halo, saya ERLANGS AI. Ada yang bisa saya bantu?',
+        photoUrl: 'https://i.pravatar.cc/150?img=2',
+        type: BubbleType.alone,
+      ));
+    });
   }
 
   @override
@@ -52,77 +61,103 @@ class _ChatPageState extends State<ChatPage> {
               Icons.logout,
               color: Colors.white,
             ),
-            onPressed: _logout, // Call logout function
+            onPressed: _logout,
             tooltip: 'Logout',
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics()),
-              reverse: true,
-              padding: const EdgeInsets.all(10),
-              children: chatBubbles.reversed.toList(),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    decoration: const InputDecoration(
-                      hintText: 'Type a message...',
-                    ),
-                  ),
+          Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics()),
+                  reverse: true,
+                  padding: const EdgeInsets.all(10),
+                  children: chatBubbles.reversed.toList(),
                 ),
-                isLoading
-                    ? const CircularProgressIndicator.adaptive()
-                    : IconButton(
-                        icon: const Icon(Icons.send),
-                        onPressed: () async {
-                          // Send message logic here
-                          setState(() {
-                            isLoading = true;
-                          });
-                          final content = [
-                            Content.text(messageController.text)
-                          ];
-                          final GenerateContentResponse responseAI =
-                              await model.generateContent(content);
-
-                          chatBubbles = [
-                            ...chatBubbles,
-                            ChatBubble(
-                              direction: Direction.right,
-                              message: messageController.text,
-                              photoUrl: null,
-                              type: BubbleType.alone,
-                            )
-                          ];
-
-                          chatBubbles = [
-                            ...chatBubbles,
-                            ChatBubble(
-                              direction: Direction.left,
-                              message: responseAI.text ??
-                                  'Maaf, saya tidak mengerti',
-                              photoUrl: 'https://i.pravatar.cc/150?img=2',
-                              type: BubbleType.alone,
-                            )
-                          ];
-
-                          messageController.clear();
-                          setState(() {
-                            isLoading = false;
-                          });
-                        },
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: messageController,
+                        decoration: const InputDecoration(
+                          hintText: 'Type a message...',
+                        ),
                       ),
-              ],
+                    ),
+                    isLoading
+                        ? const CircularProgressIndicator.adaptive()
+                        : IconButton(
+                            icon: const Icon(Icons.send),
+                            onPressed: () async {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              final content = [
+                                Content.text(messageController.text)
+                              ];
+                              final GenerateContentResponse responseAI =
+                                  await model.generateContent(content);
+
+                              chatBubbles = [
+                                ...chatBubbles,
+                                ChatBubble(
+                                  direction: Direction.right,
+                                  message: messageController.text,
+                                  photoUrl: null,
+                                  type: BubbleType.alone,
+                                ),
+                                ChatBubble(
+                                  direction: Direction.left,
+                                  message: responseAI.text ??
+                                      'Maaf, saya tidak mengerti',
+                                  photoUrl: 'https://i.pravatar.cc/150?img=2',
+                                  type: BubbleType.alone,
+                                ),
+                              ];
+
+                              messageController.clear();
+                              setState(() {
+                                isLoading = false;
+                              });
+                            },
+                          ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                decoration: BoxDecoration(
+                  color:
+                      AppColors.white.withOpacity(0.5), // Warna latar belakang
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.5),
+                      offset: const Offset(0, 1), // Posisi bayangan
+                    ),
+                  ], // Radius sudut
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.refresh,
+                    color: AppColors.primary,
+                  ),
+                  onPressed: _refreshChat,
+                  tooltip: 'Refresh Chat',
+                ),
+              ),
             ),
           ),
         ],
