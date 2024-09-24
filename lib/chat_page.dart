@@ -88,13 +88,32 @@ class _ChatPageState extends State<ChatPage> {
                         controller: messageController,
                         decoration: const InputDecoration(
                           hintText: 'Type a message...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(15.0)), // Radius untuk border
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(15.0)), // Radius saat fokus
+                            borderSide: BorderSide(
+                                color: AppColors.primary, width: 2.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(15.0)), // Radius saat enabled
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
                         ),
                       ),
                     ),
                     isLoading
                         ? const CircularProgressIndicator.adaptive()
                         : IconButton(
-                            icon: const Icon(Icons.send),
+                            icon: const Icon(
+                              Icons.send,
+                              size: 35,
+                            ),
                             onPressed: () async {
                               setState(() {
                                 isLoading = true;
