@@ -2,10 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Tambahkan ini
 import 'pages/widgets/chat_bubble.dart';
 import 'constants/colors.dart';
-
-const apiKey = 'AIzaSyACec0La78HL4CVV-IK4d0Cq8FS6W0CvMs';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -15,7 +14,9 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
+  // Mengambil API key dari variabel lingkungan
+  final model =
+      GenerativeModel(model: 'gemini-pro', apiKey: dotenv.env['API_KEY']!);
   TextEditingController messageController = TextEditingController();
   bool isLoading = false;
 
@@ -89,18 +90,18 @@ class _ChatPageState extends State<ChatPage> {
                         decoration: const InputDecoration(
                           hintText: 'Type a message...',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(15.0)), // Radius untuk border
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15.0)),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(15.0)), // Radius saat fokus
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15.0)),
                             borderSide: BorderSide(
                                 color: AppColors.primary, width: 2.0),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(15.0)), // Radius saat enabled
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15.0)),
                             borderSide:
                                 BorderSide(color: Colors.grey, width: 1.0),
                           ),
@@ -158,15 +159,14 @@ class _ChatPageState extends State<ChatPage> {
               alignment: Alignment.topCenter,
               child: Container(
                 decoration: BoxDecoration(
-                  color:
-                      AppColors.white.withOpacity(0.5), // Warna latar belakang
+                  color: AppColors.white.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.primary.withOpacity(0.5),
-                      offset: const Offset(0, 1), // Posisi bayangan
+                      offset: const Offset(0, 1),
                     ),
-                  ], // Radius sudut
+                  ],
                 ),
                 child: IconButton(
                   icon: const Icon(
