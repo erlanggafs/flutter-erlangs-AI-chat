@@ -137,8 +137,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 label: const Text('Sign in with Google'),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.black,
+                  backgroundColor: Colors.white70,
                 ),
                 onPressed: _isLoading ? null : _signInWithGoogle,
               ),

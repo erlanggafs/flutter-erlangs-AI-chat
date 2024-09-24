@@ -48,24 +48,65 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(
-          Icons.model_training,
-          color: AppColors.white,
-        ),
         title: const Text('Erlangs AI', style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primary,
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.logout,
-              color: Colors.white,
-            ),
-            onPressed: _logout,
-            tooltip: 'Logout',
-          ),
+              onPressed: () {},
+              icon: Icon(
+                Icons.help_outline,
+                color: AppColors.white,
+              ))
         ],
+        leading: Builder(builder: (context) {
+          return IconButton(
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: const Icon(
+              Icons.account_circle_rounded, // Changed icon to model_training
+              color: Colors.white,
+              size: 35,
+            ),
+          );
+        }),
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(user?.displayName ?? 'User'),
+              accountEmail: Text(user?.email ?? 'Email'),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: user?.photoURL != null
+                    ? NetworkImage(user!.photoURL!)
+                    : null, // Jika tidak ada foto, tetap menggunakan teks
+                child: user?.photoURL == null
+                    ? Text(
+                        user?.displayName?.substring(0, 1) ?? 'U',
+                        style:
+                            TextStyle(fontSize: 40.0, color: AppColors.primary),
+                      )
+                    : null, // Tidak ada teks jika ada gambar
+              ),
+              decoration: BoxDecoration(color: AppColors.primary),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.logout,
+                color: AppColors.black,
+              ),
+              title: Text('Logout'),
+              onTap: _logout,
+            ),
+            Divider(
+              height: 2,
+            )
+          ],
+        ),
       ),
       body: Stack(
         children: [
