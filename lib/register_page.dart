@@ -1,7 +1,8 @@
+import 'package:erlangs_ai/constants/colors.dart';
+import 'package:erlangs_ai/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_gemini_chat_app/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,62 +17,134 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
+  bool _isPasswordVisible = false; // Kontrol visibilitas password
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Register Page',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.blueGrey,
+        title: const Text('Register'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 50, right: 15, left: 15),
         child: ListView(
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            const SizedBox(height: 24.0),
-            const FlutterLogo(size: 100),
-            const SizedBox(height: 16.0),
+            const Icon(
+              Icons.model_training,
+              color: AppColors.primary,
+              size: 120,
+            ),
             const Text(
               'Erlangs AI',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueGrey,
+                color: AppColors.primary,
               ),
             ),
-            const SizedBox(height: 48.0),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 28.0),
+            const SizedBox(height: 30.0),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 2.0,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: const BorderSide(
+                      color: AppColors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 2.0,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: const BorderSide(
+                      color: AppColors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: TextFormField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible, // Atur visibilitas password
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 2.0,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: const BorderSide(
+                      color: AppColors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible =
+                            !_isPasswordVisible; // Toggle visibilitas
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 25.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white, // Background color
+                  backgroundColor: AppColors.primary, // Text color
+                ),
                 onPressed: _isLoading ? null : _register,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Register'),
               ),
             ),
-            const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -116,9 +189,9 @@ class _RegisterPageState extends State<RegisterPage> {
         'name': _nameController.text,
         'email': _emailController.text,
       });
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
+
+      // Menampilkan dialog sukses setelah registrasi berhasil
+      _showSuccessDialog('Registration Successful! You can now log in.');
     } catch (e) {
       _showErrorDialog('Registration Failed: ${e.toString()}');
     } finally {
@@ -126,6 +199,30 @@ class _RegisterPageState extends State<RegisterPage> {
         _isLoading = false;
       });
     }
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Success'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Navigasi ke halaman login setelah dialog ditutup
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showErrorDialog(String message) {

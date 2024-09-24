@@ -16,7 +16,8 @@ class ChatFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding ?? const EdgeInsets.only(left: 8, right: 8, bottom: 4, top: 4),
+      padding: padding ??
+          const EdgeInsets.only(left: 8, right: 8, bottom: 4, top: 4),
       child: Row(
         children: [
           Expanded(
@@ -29,7 +30,8 @@ class ChatFooter extends StatelessWidget {
                 maxLines: 3,
                 controller: textController,
                 decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   isDense: true,
                   fillColor: Colors.black12,
                   filled: true,

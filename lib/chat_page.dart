@@ -111,7 +111,7 @@ class _ChatPageState extends State<ChatPage> {
                               direction: Direction.left,
                               message: responseAI.text ??
                                   'Maaf, saya tidak mengerti',
-                              photoUrl: 'https://i.pravatar.cc/150?img=47',
+                              photoUrl: 'https://i.pravatar.cc/150?img=2',
                               type: BubbleType.alone,
                             )
                           ];

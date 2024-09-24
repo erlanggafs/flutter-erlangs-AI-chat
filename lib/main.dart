@@ -1,9 +1,9 @@
+import 'package:erlangs_ai/chat_page.dart';
+import 'package:erlangs_ai/firebase_options.dart';
+import 'package:erlangs_ai/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_gemini_chat_app/chat_page.dart';
-import 'package:flutter_gemini_chat_app/firebase_options.dart';
-import 'package:flutter_gemini_chat_app/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,21 +25,26 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          if (snapshot.hasData) {
-            return ChatPage();
-          }
-          return const LoginPage();
-        },
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => StreamBuilder<User?>(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (snapshot.hasData) {
+                  return const ChatPage();
+                }
+                return const LoginPage();
+              },
+            ),
+        '/login': (context) => const LoginPage(),
+        '/chat': (context) => const ChatPage(),
+      },
     );
   }
 }
