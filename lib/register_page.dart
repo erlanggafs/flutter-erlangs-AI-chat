@@ -17,7 +17,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
-  bool _isPasswordVisible = false; // Kontrol visibilitas password
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +98,7 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: TextFormField(
                 controller: _passwordController,
-                obscureText: !_isPasswordVisible, // Atur visibilitas password
+                obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   focusedBorder: OutlineInputBorder(
@@ -123,8 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isPasswordVisible =
-                            !_isPasswordVisible; // Toggle visibilitas
+                        _isPasswordVisible = !_isPasswordVisible;
                       });
                     },
                   ),
@@ -174,7 +173,10 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    if (!_emailController.text.contains('@')) {
+    // Validasi format email
+    final emailValid =
+        RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(_emailController.text);
+    if (!emailValid) {
       _showErrorDialog('Please enter a valid email address.');
       return;
     }
@@ -224,8 +226,6 @@ class _RegisterPageState extends State<RegisterPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
-                // Navigasi ke halaman login setelah dialog ditutup
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const LoginPage()),
                 );

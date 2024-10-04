@@ -1,7 +1,8 @@
 import 'package:erlangs_ai/chat_page.dart';
 import 'package:erlangs_ai/register_page.dart';
+import 'package:erlangs_ai/phone_signin_page.dart'; // Tambahkan import ini
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart'; // Import Google Sign-In
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'constants/colors.dart';
 
@@ -47,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
               child: TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.email,
                     color: AppColors.black,
                   ),
@@ -77,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.vpn_key,
                     color: AppColors.black,
                   ),
@@ -125,22 +126,50 @@ class _LoginPageState extends State<LoginPage> {
                     : const Text('Login'),
               ),
             ),
-            Center(child: Text('OR')),
-            // Tambahkan tombol Google Sign-In
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: ElevatedButton.icon(
-                icon: Image.asset(
-                  'assets/icons/google_logo.png', // Path ke logo Google
-                  height: 24.0,
-                  width: 24.0,
-                ),
-                label: const Text('Sign in with Google'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: AppColors.black,
-                  backgroundColor: Colors.white70,
-                ),
-                onPressed: _isLoading ? null : _signInWithGoogle,
+            const SizedBox(height: 10),
+            const Center(child: Text('OR')),
+            const SizedBox(height: 10),
+            // Tombol Google Sign-In sebagai IconButton
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Material(
+                      shape: const CircleBorder(),
+                      elevation: 2.0,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24.0),
+                        onTap: _isLoading ? null : _signInWithGoogle,
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            'assets/icons/google_logo.png',
+                            height: 24.0,
+                            width: 24.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Tombol Login dengan Nomor Telepon
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Material(
+                      shape: const CircleBorder(),
+                      elevation: 2.0,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24.0),
+                        onTap: _isLoading ? null : _navigateToPhoneSignInPage,
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Icon(Icons.phone),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Row(
@@ -151,7 +180,8 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => const RegisterPage()),
+                        builder: (context) => const RegisterPage(),
+                      ),
                     );
                   },
                   child: const Text('Register'),
@@ -182,9 +212,16 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController.text.trim(),
       );
 
+      // Cek apakah email terverifikasi
       if (userCredential.user != null) {
+        if (!userCredential.user!.emailVerified) {
+          _showErrorDialog(
+              'Your email has not been verified. Please check your email.');
+          return;
+        }
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const ChatPage()));
+          MaterialPageRoute(builder: (context) => const ChatPage()),
+        );
       }
     } catch (e) {
       _showErrorDialog('Login Failed: ${e.toString()}');
@@ -217,7 +254,8 @@ class _LoginPageState extends State<LoginPage> {
 
         if (userCredential.user != null) {
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const ChatPage()));
+            MaterialPageRoute(builder: (context) => const ChatPage()),
+          );
         }
       }
     } catch (e) {
@@ -227,6 +265,13 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = false;
       });
     }
+  }
+
+  // Navigasi ke halaman Phone Sign-In
+  void _navigateToPhoneSignInPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => PhoneSignInPage()),
+    );
   }
 
   // Fungsi menampilkan dialog error

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Tambahkan ini
+import 'package:cloud_firestore/cloud_firestore.dart'; // Tambahkan Firestore
 import 'pages/widgets/chat_bubble.dart';
 import 'constants/colors.dart';
 
@@ -28,6 +29,35 @@ class _ChatPageState extends State<ChatPage> {
       type: BubbleType.alone,
     ),
   ];
+
+  // Tambahkan variabel untuk menyimpan nama dan email
+  String? name;
+  String? email;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData(); // Ambil data pengguna saat inisialisasi
+  }
+
+  // Fungsi untuk mengambil data pengguna dari Firestore
+  Future<void> _getUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+
+      setState(() {
+        name =
+            userDoc.data()?['name'] ?? 'User'; // Mengambil nama dari Firestore
+        email = user.email; // Mengambil email dari FirebaseAuth
+      });
+    }
+  }
 
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
@@ -66,7 +96,7 @@ class _ChatPageState extends State<ChatPage> {
           return IconButton(
             onPressed: () => Scaffold.of(context).openDrawer(),
             icon: const Icon(
-              Icons.account_circle_rounded, // Changed icon to model_training
+              Icons.account_circle_rounded,
               color: Colors.white,
               size: 35,
             ),
@@ -77,34 +107,38 @@ class _ChatPageState extends State<ChatPage> {
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(user?.displayName ?? 'User'),
-              accountEmail: Text(user?.email ?? 'Email'),
+              accountName: Text(name ??
+                  'User'), // Gunakan nama dari Firestore atau fallback ke 'User'
+              accountEmail:
+                  Text(email ?? 'Email'), // Menampilkan email dari FirebaseAuth
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white,
                 backgroundImage: user?.photoURL != null
-                    ? NetworkImage(user!.photoURL!)
-                    : null, // Jika tidak ada foto, tetap menggunakan teks
+                    ? NetworkImage(
+                        user!.photoURL!) // Tampilkan foto profil jika ada
+                    : null,
                 child: user?.photoURL == null
                     ? Text(
-                        user?.displayName?.substring(0, 1) ?? 'U',
-                        style:
-                            TextStyle(fontSize: 40.0, color: AppColors.primary),
+                        name != null && name!.isNotEmpty
+                            ? name![0]
+                                .toUpperCase() // Menampilkan inisial dari nama
+                            : 'U', // Inisial default jika tidak ada nama
+                        style: const TextStyle(
+                            fontSize: 40.0, color: AppColors.primary),
                       )
-                    : null, // Tidak ada teks jika ada gambar
+                    : null, // Jika ada gambar, tidak menampilkan teks
               ),
-              decoration: BoxDecoration(color: AppColors.primary),
+              decoration: const BoxDecoration(color: AppColors.primary),
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.logout,
                 color: AppColors.black,
               ),
-              title: Text('Logout'),
+              title: const Text('Logout'),
               onTap: _logout,
             ),
-            Divider(
-              height: 2,
-            )
+            const Divider(height: 2),
           ],
         ),
       ),
