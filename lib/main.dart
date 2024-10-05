@@ -1,5 +1,7 @@
+import 'package:erlangs_ai/change_password.dart';
 import 'package:erlangs_ai/chat_page.dart';
 import 'package:erlangs_ai/firebase_options.dart';
+import 'package:erlangs_ai/forgot_password_page.dart';
 import 'package:erlangs_ai/login_page.dart';
 import 'package:erlangs_ai/splashscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -53,7 +55,10 @@ class MyApp extends StatelessWidget {
             ),
         '/login': (context) => const LoginPage(),
         '/chat': (context) => const ChatPage(),
-        '/phoneSignIn': (context) => PhoneSignIn(), // Route untuk PhoneSignIn
+        '/phoneSignIn': (context) => PhoneSignIn(),
+        '/forgot-password': (context) => const ForgotPasswordPage(),
+        '/change-password': (context) =>
+            const ChangePasswordPage(), // Route untuk PhoneSignIn
       },
     );
   }
@@ -92,17 +97,17 @@ class AuthService {
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
         await _auth.signInWithCredential(credential);
-        print("Login sukses!");
+        print("Login Succes!");
       },
       verificationFailed: (FirebaseAuthException e) {
         print('Error: ${e.message}');
       },
       codeSent: (String verificationId, int? resendToken) {
         // Simpan verificationId untuk verifikasi OTP nanti
-        print("OTP dikirim. Verifikasi ID: $verificationId");
+        print("OTP sent. ID verification: $verificationId");
       },
       codeAutoRetrievalTimeout: (String verificationId) {
-        print("Timeout untuk verifikasi ID: $verificationId");
+        print("Timeout for ID verification: $verificationId");
       },
     );
   }
@@ -117,9 +122,9 @@ class AuthService {
 
       // Sign in dengan credential
       await _auth.signInWithCredential(credential);
-      print("OTP berhasil diverifikasi dan login sukses!");
+      print("OTP successfully verified and login successful!");
     } catch (e) {
-      print("Verifikasi OTP gagal: $e");
+      print("OTP verification failed: $e");
     }
   }
 }
@@ -163,7 +168,7 @@ class _PhoneSignInState extends State<PhoneSignIn> {
       phoneNumber: _phoneController.text.trim(),
       verificationCompleted: (PhoneAuthCredential credential) async {
         await _auth.signInWithCredential(credential);
-        print("Login sukses!");
+        print("Login successful!");
       },
       verificationFailed: (FirebaseAuthException e) {
         print('Verification failed: ${e.message}');
@@ -190,9 +195,9 @@ class _PhoneSignInState extends State<PhoneSignIn> {
       );
       try {
         await _auth.signInWithCredential(credential);
-        print("Login sukses dengan OTP!");
+        print("Successful login with OTP!");
       } catch (e) {
-        print("Verifikasi OTP gagal: $e");
+        print("OTP verification failed: $e");
       }
     }
   }

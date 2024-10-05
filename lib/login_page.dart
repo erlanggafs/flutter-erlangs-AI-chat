@@ -112,7 +112,24 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 28.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(
+                          '/forgot-password'); // Tindakan saat tombol diklik
+                    },
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: AppColors.black),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: ElevatedButton(

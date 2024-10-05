@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'chat_page.dart'; // Halaman chat setelah login berhasil
+import 'chat_page.dart';
+import 'constants/colors.dart'; // Halaman chat setelah login berhasil
 
 class PhoneSignInPage extends StatefulWidget {
   const PhoneSignInPage({super.key});
@@ -28,12 +29,34 @@ class _PhoneSignInPageState extends State<PhoneSignInPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Masukkan nomor telepon Anda'),
+                ],
+              ),
+            ),
             TextField(
               controller: _phoneController,
-              decoration: const InputDecoration(
-                labelText: 'Nomor Telepon',
-                border: OutlineInputBorder(),
-                prefixText: '+62 ', // Sesuaikan dengan kode negara yang relevan
+              decoration: InputDecoration(
+                labelText: 'Phone',
+                prefixText: '+62',
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                  borderSide: const BorderSide(
+                    color: AppColors.primary,
+                    width: 2.0,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                  borderSide: const BorderSide(
+                    color: AppColors.black,
+                    width: 2.0,
+                  ),
+                ),
               ),
               keyboardType: TextInputType.phone,
             ),
