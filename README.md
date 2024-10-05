@@ -1,4 +1,4 @@
-# flutter_chat_google_ai
+# flutter_erlangs_ai
 
 A new Flutter project.
 
