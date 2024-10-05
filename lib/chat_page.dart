@@ -154,7 +154,7 @@ class _ChatPageState extends State<ChatPage> {
             ),
             ListTile(
               leading: const Icon(
-                Icons.lock_clock_outlined,
+                Icons.vpn_key,
                 color: AppColors.black,
               ),
               title: const Text('Ubah Password'),
