@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'chat_page.dart';
-import 'constants/colors.dart'; // Halaman chat setelah login berhasil
+import '../../constants/colors.dart'; // Halaman chat setelah login berhasil
 
 class PhoneSignInPage extends StatefulWidget {
   const PhoneSignInPage({super.key});

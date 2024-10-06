@@ -1,12 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    
+
     <!-- Permission to allow internet access -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:label="Erlangs AI"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+        android:enableOnBackInvokedCallback="true"> <!-- Memperbaiki penulisan atribut ini -->
 
         <activity
             android:name=".MainActivity"
@@ -24,7 +25,6 @@
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
-
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

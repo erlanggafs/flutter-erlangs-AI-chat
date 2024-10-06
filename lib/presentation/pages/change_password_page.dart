@@ -1,6 +1,6 @@
+import 'package:erlangs_ai/constants/colors.dart';
+import 'package:erlangs_ai/presentation/controllers/change_password_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'constants/colors.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -10,54 +10,12 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
-  final TextEditingController _oldPasswordController = TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool _isLoading = false;
-  String? _errorMessage;
+  final ChangePasswordController _controller = ChangePasswordController();
 
-  // Menyimpan status tampilan password
-  bool _obscureOldPassword = true;
-  bool _obscureNewPassword = true;
-  bool _obscureConfirmPassword = true;
-
-  Future<void> _changePassword() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null; // Reset error message
-    });
-
-    try {
-      User? user = _auth.currentUser;
-      String email = user!.email!;
-
-      // Re-authenticate user with old password
-      AuthCredential credential = EmailAuthProvider.credential(
-          email: email, password: _oldPasswordController.text);
-      await user.reauthenticateWithCredential(credential);
-
-      // Check if new passwords match
-      if (_newPasswordController.text == _confirmPasswordController.text) {
-        // Update password
-        await user.updatePassword(_newPasswordController.text);
-        _showDialog('Sukses',
-            'Password Anda berhasil diubah. Login Kembali'); // Tampilkan dialog sukses
-      } else {
-        setState(() {
-          _errorMessage = "Password baru tidak cocok.";
-        });
-      }
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message; // Set error message
-      });
-    } finally {
-      setState(() {
-        _isLoading = false; // Reset loading state
-      });
-    }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   // Menampilkan dialog
@@ -95,58 +53,62 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildPasswordField(
-              controller: _oldPasswordController,
+              controller: _controller.oldPasswordController,
               label: 'Password Lama',
-              obscureText: _obscureOldPassword,
+              obscureText: _controller.obscureOldPassword,
               onToggle: () {
                 setState(() {
-                  _obscureOldPassword = !_obscureOldPassword;
+                  _controller.obscureOldPassword =
+                      !_controller.obscureOldPassword;
                 });
               },
             ),
             const SizedBox(height: 16),
             _buildPasswordField(
-              controller: _newPasswordController,
+              controller: _controller.newPasswordController,
               label: 'Password Baru',
-              obscureText: _obscureNewPassword,
+              obscureText: _controller.obscureNewPassword,
               onToggle: () {
                 setState(() {
-                  _obscureNewPassword = !_obscureNewPassword;
+                  _controller.obscureNewPassword =
+                      !_controller.obscureNewPassword;
                 });
               },
             ),
             const SizedBox(height: 16),
             _buildPasswordField(
-              controller: _confirmPasswordController,
+              controller: _controller.confirmPasswordController,
               label: 'Konfirmasi Password Baru',
-              obscureText: _obscureConfirmPassword,
+              obscureText: _controller.obscureConfirmPassword,
               onToggle: () {
                 setState(() {
-                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                  _controller.obscureConfirmPassword =
+                      !_controller.obscureConfirmPassword;
                 });
               },
             ),
             const SizedBox(height: 16),
-            if (_errorMessage != null)
+            if (_controller.errorMessage != null)
               Text(
-                _errorMessage!,
+                _controller.errorMessage!,
                 style: const TextStyle(color: Colors.red),
               ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _isLoading ? null : _changePassword,
+              onPressed: _controller.isLoading
+                  ? null
+                  : () {
+                      _controller.changePassword(_showDialog, setState);
+                    },
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    AppColors.primary, // Ganti dengan warna yang diinginkan
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10), // Untuk memperbesar tombol
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
-              child: _isLoading
+              child: _controller.isLoading
                   ? const CircularProgressIndicator()
                   : const Text(
                       'Ubah Password',
-                      style: TextStyle(
-                          color: Colors.white), // Warna teks dalam tombol
+                      style: TextStyle(color: Colors.white),
                     ),
             ),
           ],
@@ -155,7 +117,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  // Widget untuk membangun TextField dengan tombol untuk melihat password
   Widget _buildPasswordField({
     required TextEditingController controller,
     required String label,
@@ -172,7 +133,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           icon: Icon(
             obscureText ? Icons.visibility : Icons.visibility_off,
           ),
-          onPressed: onToggle, // Toggle visibility
+          onPressed: onToggle,
         ),
       ),
     );
