@@ -68,20 +68,34 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   @override
   Widget build(BuildContext context) {
     return _isLoading
-        ? const CircularProgressIndicator()
-        : Material(
-            shape: const CircleBorder(),
-            elevation: 2.0,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(24.0),
-              onTap: _isLoading ? null : _signInWithGoogle,
-              child: Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  'assets/icons/google_logo.png',
-                  height: 24.0,
-                  width: 24.0,
-                ),
+        ? const Center(
+            child: CircularProgressIndicator(), // Menampilkan loading indicator
+          )
+        : ElevatedButton.icon(
+            onPressed: _isLoading
+                ? null
+                : _signInWithGoogle, // Fungsi ketika tombol ditekan
+            icon: Image.asset(
+              'assets/icons/google_logo.png',
+              height: 24.0,
+              width: 24.0,
+            ),
+            label: const Text(
+              'Sign in with Google',
+              style: TextStyle(
+                fontSize: 14.0, // Ukuran teks
+                fontWeight: FontWeight.w500, // Berat huruf
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              backgroundColor: Colors.white, // Warna latar belakang tombol
+              foregroundColor: Colors.black, // Warna teks dan ikon
+              elevation: 2.0, // Mengatur elevasi tombol
+              shape: RoundedRectangleBorder(
+                // Mengatur bentuk tombol menjadi lebih kotak
+                borderRadius: BorderRadius.circular(20.0),
               ),
             ),
           );

@@ -153,8 +153,8 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
         GoogleSignInButton(),
-        SizedBox(width: 20),
-        PhoneSignInButton(),
+        // SizedBox(width: 20),
+        // PhoneSignInButton(),
       ],
     );
   }
@@ -163,6 +163,9 @@ class _LoginPageState extends State<LoginPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        SizedBox(
+          height: 70,
+        ),
         const Text('Don\'t have an account?'),
         TextButton(
           onPressed: () {
