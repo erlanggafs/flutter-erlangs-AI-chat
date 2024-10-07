@@ -1,9 +1,9 @@
 import 'package:erlangs_ai/presentation/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/chat_bubble.dart';
 import '../../constants/colors.dart'; // Import drawer baru
 

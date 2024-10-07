@@ -6,7 +6,7 @@
     <application
         android:label="Erlangs AI"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@mipmap/launcher_icon" 
         android:enableOnBackInvokedCallback="true"> <!-- Memperbaiki penulisan atribut ini -->
 
         <activity
