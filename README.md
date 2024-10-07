@@ -1,4 +1,6 @@
 # flutter_erlangs_ai
+<img width="1440" alt="Desktop - 3" src="https://github.com/user-attachments/assets/745e70b9-3a80-4360-976a-79df74e10c5c">
+
 
 A new Flutter project.
 
