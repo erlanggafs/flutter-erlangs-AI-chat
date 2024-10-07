@@ -46,4 +46,4 @@ app.*.map.json
 .env
 
 # Ignore Firebase options file
-lib/core/firebase_option.dart
+lib/core/firebase_options.dart
